@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -37,6 +38,9 @@ func main() {
 		encodeVideoToMP4(file)
 	}
 
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Encoding done")
+	reader.ReadString('\n')
 }
 
 func encodeVideoToMP4(inputVideoFilepath string) {
@@ -57,6 +61,5 @@ func encodeVideoToMP4(inputVideoFilepath string) {
 		log.Println("ERROR: ", inputVideoFilepath, err)
 	}
 
-	cmd.Wait()
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }
