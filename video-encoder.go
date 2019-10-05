@@ -60,6 +60,4 @@ func encodeVideoToMP4(inputVideoFilepath string) {
 	if err != nil {
 		log.Println("ERROR: ", inputVideoFilepath, err)
 	}
-
-	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }
