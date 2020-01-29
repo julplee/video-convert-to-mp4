@@ -17,7 +17,7 @@ func main() {
 
 	log.Println("Reading the video to encode directory...")
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		if info.IsDir() || filepath.Ext(path) != ".ts" {
+		if info.IsDir() || (filepath.Ext(path) != ".ts" && filepath.Ext(path) != ".mp4") {
 			if path != root {
 				log.Println("WARNING: The file " + path + " will not be encoded")
 			}
