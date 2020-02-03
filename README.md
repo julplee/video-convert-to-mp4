@@ -8,6 +8,6 @@ Download FFMPEG to the root of the directory to launch it (warning: code working
 
 ## Instructions
 
-Put your videos files in `video-to-encode` folder
-Launch the program
-Get your encoded files in `video-encoded` folder
+* Put your videos files in `video-to-encode` folder
+* Launch the program
+* Get your encoded files in `video-encoded` folder
