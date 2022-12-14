@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -68,7 +69,12 @@ func encodeVideoToMP4(inputVideoFilepath string) {
 	cmd.Stderr = &stderr
 
 	log.Println("Encode video " + inputVideoFilepath)
+
+	start := time.Now()
 	err := cmd.Run()
+	elapsed := time.Since(start)
+
+	log.Printf("Recording took %s", elapsed)
 
 	if err != nil {
 		log.Println("ERROR: ", inputVideoFilepath, stderr.String())
