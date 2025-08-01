@@ -52,9 +52,11 @@ func encodeVideoToMP4(inputVideoFilepath string) {
 	var name = filename[0 : len(filename)-len(extension)]
 
 	// use ffmpeg to encode video to MP4
+	ffmpegPath, _ := filepath.Abs("ffmpeg.exe")
+
 	cmd := exec.Command(
-		"ffmpeg.exe",
-		"-i", inputVideoFilepath,
+		ffmpegPath,
+		"-i", filepath.Clean(inputVideoFilepath),
 		"-preset", "slow",
 		"-c:a", "aac",
 		"-c:v", "libx264",
@@ -78,6 +80,7 @@ func encodeVideoToMP4(inputVideoFilepath string) {
 
 	if err != nil {
 		log.Println("ERROR: ", inputVideoFilepath, stderr.String())
+		log.Println("ERROR executing ffmpeg:", err)
 	}
 }
 
