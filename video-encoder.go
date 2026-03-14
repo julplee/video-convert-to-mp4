@@ -37,7 +37,10 @@ func main() {
 
 	log.Println("Now let's encode each video:")
 	for _, file := range files {
-		encodeVideoToMP4(file)
+		if err := encodeVideoToMP4(file); err != nil {
+			log.Println("Skipping rename because encoding failed:", file)
+			continue
+		}
 		renameOriginFile(file)
 	}
 
@@ -46,7 +49,7 @@ func main() {
 	reader.ReadString('\n')
 }
 
-func encodeVideoToMP4(inputVideoFilepath string) {
+func encodeVideoToMP4(inputVideoFilepath string) error {
 	var filename = filepath.Base(inputVideoFilepath)
 	var extension = filepath.Ext(filename)
 	var name = filename[0 : len(filename)-len(extension)]
@@ -81,7 +84,10 @@ func encodeVideoToMP4(inputVideoFilepath string) {
 	if err != nil {
 		log.Println("ERROR: ", inputVideoFilepath, stderr.String())
 		log.Println("ERROR executing ffmpeg:", err)
+		return err
 	}
+
+	return nil
 }
 
 func renameOriginFile(inputVideoFilepath string) {
