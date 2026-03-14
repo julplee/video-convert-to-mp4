@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -55,7 +56,12 @@ func encodeVideoToMP4(inputVideoFilepath string) error {
 	var name = filename[0 : len(filename)-len(extension)]
 
 	// use ffmpeg to encode video to MP4
-	ffmpegPath, _ := filepath.Abs("ffmpeg.exe")
+	ffmpegPath, err := resolveFFmpegPath()
+	if err != nil {
+		log.Println("ERROR resolving ffmpeg:", err)
+		return err
+	}
+	outputPath := filepath.Join("video-encoded", name+".mp4")
 
 	cmd := exec.Command(
 		ffmpegPath,
@@ -66,7 +72,7 @@ func encodeVideoToMP4(inputVideoFilepath string) error {
 		"-maxrate", "3.5M",
 		"-bufsize", "1.5M",
 		"-profile:v", "main",
-		"video-encoded\\"+name+".mp4")
+		outputPath)
 
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
@@ -76,7 +82,7 @@ func encodeVideoToMP4(inputVideoFilepath string) error {
 	log.Println("Encode video " + inputVideoFilepath)
 
 	start := time.Now()
-	err := cmd.Run()
+	err = cmd.Run()
 	elapsed := time.Since(start)
 
 	log.Printf("Recording took %s", elapsed)
@@ -88,6 +94,26 @@ func encodeVideoToMP4(inputVideoFilepath string) error {
 	}
 
 	return nil
+}
+
+func resolveFFmpegPath() (string, error) {
+	candidates := []string{"ffmpeg", "ffmpeg.exe"}
+
+	for _, candidate := range candidates {
+		if path, err := exec.LookPath(candidate); err == nil {
+			return path, nil
+		}
+	}
+
+	for _, candidate := range candidates {
+		if path, err := filepath.Abs(candidate); err == nil {
+			if _, statErr := os.Stat(path); statErr == nil {
+				return path, nil
+			}
+		}
+	}
+
+	return "", errors.New("ffmpeg executable not found in PATH or project root")
 }
 
 func renameOriginFile(inputVideoFilepath string) {
