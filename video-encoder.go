@@ -17,10 +17,18 @@ func main() {
 	var files []string
 
 	root := "./video-to-encode"
+	supportedExtensions := map[string]struct{}{
+		".ts":  {},
+		".mp4": {},
+		".wmv": {},
+		".avi": {},
+		".mkv": {},
+	}
 
 	log.Println("Reading the video to encode directory...")
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		if info.IsDir() || (filepath.Ext(path) != ".ts" && filepath.Ext(path) != ".mp4" && filepath.Ext(path) != ".wmv" && filepath.Ext(path) != ".avi" && filepath.Ext(path) != ".mkv") {
+		extension := strings.ToLower(filepath.Ext(path))
+		if info.IsDir() || !isSupportedExtension(extension, supportedExtensions) {
 			if path != root {
 				log.Println("WARNING: The file " + path + " will not be encoded")
 			}
@@ -48,6 +56,11 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Encoding done")
 	reader.ReadString('\n')
+}
+
+func isSupportedExtension(extension string, supportedExtensions map[string]struct{}) bool {
+	_, ok := supportedExtensions[extension]
+	return ok
 }
 
 func encodeVideoToMP4(inputVideoFilepath string) error {
